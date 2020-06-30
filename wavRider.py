@@ -1,16 +1,14 @@
-import struct, pyaudio
+import pyaudio
+#so python has a wave library
 
 PLAY_MUSIC = True
 
-f1 = 'New Composition #11.wav'
-f2 = 'snippet.wav'
-f3 = 'snippet2.wav'
-f4 = 'lrStereoTest.wav'
-f5 = 'snippet3.wav'
+input_file = r"C:\Users\dumpl\Music\inferno.wav"
 
 p = pyaudio.PyAudio()
 
-with open(f1, 'rb') as f:
+
+with open(input_file, 'rb') as f:
     ckID = f.read(4)
     cksize = int.from_bytes(f.read(4), byteorder='little')
     WAVEID = f.read(4)
@@ -30,7 +28,6 @@ with open(f1, 'rb') as f:
     #wValidBitsPerSample = f.read(2)
     #dwChannelMask = f.read(4)
     #SubFormat = f.read(16)
-    
     while True:
         newckID = f.read(4)
         newckSize = int.from_bytes(f.read(4), byteorder='little')
@@ -43,19 +40,23 @@ with open(f1, 'rb') as f:
     #print(wBitsPerSample, cksize//8, SubFormat, cksizeFMT)
     numSamples= 0
 
-    stream = p.open(format=pyaudio.paFloat32, channels=2, rate=nSamplesPerSec, output=True)
+
+    stream = p.open(format=pyaudio.get_format_from_width(wBitsPerSample//8), channels=2, rate=nSamplesPerSec, output=True)
+
+
 
     leftFile = open('leftChannel.txt', 'wb')
     rightFile = open('rightChannel.txt', 'wb')
 
     audioData = b''
-    
+
+    # the //8 may need to be removed for the file to finish when playing with 32bit stereo audio
     while numSamples < newckSize//8:
         lChannelBits = f.read(wBitsPerSample//8)#float.from_bytes(f.read(4). byteorder='little')
         rChannelBits = f.read(wBitsPerSample//8)
     
-        lChannelFloat = struct.unpack('f', lChannelBits)[0]
-        rChannelFloat = struct.unpack('f', rChannelBits)[0]
+        #lChannelFloat = struct.unpack('f', lChannelBits)[0]
+        #rChannelFloat = struct.unpack('f', rChannelBits)[0]
 
         leftFile.write(lChannelBits)
         rightFile.write(rChannelBits)
